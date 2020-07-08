@@ -28,7 +28,7 @@ public class ModificarActivity extends AppCompatActivity {
     EditText[] Txt = new EditText[5];
     EditText txtBuscar;
     LinearLayout Caja;
-    Button btnActualizar,btnEliminar,btnBuscar;
+    Button btnActualizar,btnEliminar,btnBuscar,btnAgregar;
     RequestQueue request;//Ejecuta la peticion volley
     StringRequest stringRequest;//Captura el reusltado desde el
     JsonObjectRequest jsonStringRequest;
@@ -54,6 +54,7 @@ public class ModificarActivity extends AppCompatActivity {
         btnActualizar=findViewById(R.id.btnActualizar);
         btnEliminar=findViewById(R.id.btnEliminar);
         btnBuscar=findViewById(R.id.btnBuscar);
+        btnAgregar=findViewById(R.id.btnGuardar);
        Recursos.InicializarRequets(this);
        BotonesEvento();
        ControlarComponentes(retornar());
@@ -63,11 +64,17 @@ public class ModificarActivity extends AppCompatActivity {
         switch (llave){
             case "Agregar":
                 Mensaje("Recibo Para Agregar");
+                Caja.setVisibility(View.GONE);
+                btnActualizar.setVisibility(View.GONE);
+                btnEliminar.setVisibility(View.GONE);
                 break;
             case "Modificar":
                 Mensaje("Recibo Para Modificar Datos");
+                btnAgregar.setVisibility(View.GONE);
+
                 break;
             case "Eliminar":
+                btnAgregar.setVisibility(View.GONE);
                 Mensaje("Recibo Para Eliminar");
                 break;
                 default:
@@ -76,9 +83,16 @@ public class ModificarActivity extends AppCompatActivity {
     }
 
     public  void BotonesEvento(){
+        btnAgregar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Mensaje("Agregar Dato");
+            }
+        });
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mensaje("Agregar Buscamos");
                 if(txtBuscar.getText().toString().isEmpty()){
                     Mensaje("Campo Vacios Verifica");
                     Limpiar();
@@ -92,6 +106,7 @@ public class ModificarActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Mensaje(""+VerificarCamposVacios());
+                Mensaje("Actualizar");
                 if(VerificarCamposVacios()){
                     Mensaje("Campso Vacios Verifica");
                 }else{
@@ -105,6 +120,7 @@ public class ModificarActivity extends AppCompatActivity {
         btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Mensaje("Eliminar Dato");
                 if(VerificarCamposVacios()){
                     Mensaje("Campos Vacios Verifica");
                 }else{
