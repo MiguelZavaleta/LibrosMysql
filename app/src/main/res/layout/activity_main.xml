@@ -33,12 +33,14 @@
         android:gravity="center"
         android:layout_margin="10dp">
         <ImageButton
+            android:id="@+id/Agregar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/libro_add"
             android:textAlignment="center"
             />
         <ImageButton
+            android:id="@+id/Buscar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/investigacion"
@@ -53,12 +55,14 @@
          android:gravity="center"
          android:layout_margin="10dp">
          <ImageButton
+             android:id="@+id/Actualizar"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:background="@drawable/libro_actualizar"
              android:textAlignment="center"
              />
          <ImageButton
+             android:id="@+id/Eliminar"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:background="@drawable/eliminar_libro"
