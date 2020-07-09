@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         Modificar = findViewById(R.id.Actualizar);
         Consultar = findViewById(R.id.Buscar);
         EventosBotones();
+
     }
 
     public void EventosBotones() {

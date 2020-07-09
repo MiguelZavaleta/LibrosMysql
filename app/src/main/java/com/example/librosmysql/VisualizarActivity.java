@@ -44,7 +44,7 @@ AdaptadorLibro Adaptador;
         listView=findViewById(R.id.idListVista);
         btnRegresa=findViewById(R.id.idRegresar);
         Recursos.InicializarRequets(this);
-        ConsultarDatos("todo");
+        MostrarDatos();
 
         btnRegresa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,54 +54,52 @@ AdaptadorLibro Adaptador;
             }
         });
     }
-    public  void ConsultarDatos(final String Ctrl) {
-
+    public void MostrarDatos() {
         String url = Recursos.DireccionHtt + "Consultar.php";
-        Recursos.jsonStringRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+        Recursos.stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
-                //System.out.println("Response: " + response.toString());
-                int i = 0;
-                try {
-                    JSONArray jsonArray = response.getJSONArray("Libros");
-                    Recursos.ListaLibros.clear();
-                    while (i < jsonArray.length()) {//LLenamos nuestros Objetos
-                        JSONObject jsonObject = null;
-                        jsonObject = jsonArray.getJSONObject(i);
-                        libro = new Libro();
-                        libro.setCod_libro(jsonObject.optString("Cod_libro"));
-                        libro.setISBN(jsonObject.optString("ISBN"));
-                        libro.setTitulo(jsonObject.optString("Titulo"));
-                        libro.setEditorial(jsonObject.optString("Editorial"));
-                        libro.setEditorial(jsonObject.optString("Edicion"));
+            public void onResponse(String response) {
+                Recursos.ListaLibros.clear();
+                System.out.println(response);
 
-                        Recursos.ListaLibros.add(libro);
-                        System.out.println((i + 1) + "<< Imprimiendo Datos: " + Recursos.ListaLibros.get(i).getTitulo()
-                                + "\n>> ");
-                        i++;
-                    }
-                    LLenarListView();
-                    //BanderaVolley = true;
-                } catch (JSONException e) {
-                    Recursos.ListaLibros.clear();
+                int i=0;
+               try {
+                   JSONObject jsonObject=new JSONObject(response);
+                   JSONArray jsonArray=jsonObject.getJSONArray("Libros");
+                   while (i < jsonArray.length()) {//LLenamos nuestros Objetos
+                       jsonObject = jsonArray.getJSONObject(i);
+                       libro = new Libro();
+                       libro.setCod_libro(jsonObject.optString("Cod_libro"));
+                       libro.setISBN(jsonObject.optString("Isbm"));
+                       libro.setTitulo(jsonObject.optString("Titulo"));
+                       libro.setEditorial(jsonObject.optString("Editorial"));
+                       libro.setEditorial(jsonObject.optString("Edicion"));
+                       Recursos.ListaLibros.add(libro);
+                       System.out.println((i + 1) + "<< Imprimiendo Datos: " + Recursos.ListaLibros.get(i).getTitulo()
+                               + "\n>> ");
 
-                }
+                       i++;
+                   }
+                   LLenarListView();
+               }catch (JSONException e){
+                   System.out.println("Error: "+ e.toString());
+               }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Mensaje(error.getMessage());
+                System.out.println(error.getMessage());
             }
-        }){
+        }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> Objeto = new HashMap<>();
-                Objeto.put("Dato",Ctrl);
+                Objeto.put("clave", "todo");
                 return Objeto;
             }
         };
-        System.out.println("URL enviada: " +Recursos.jsonStringRequest);
-        Recursos.request.add(Recursos.jsonStringRequest);
+        System.out.println("Datos enviados:-> " + Recursos.stringRequest.toString());
+        Recursos.request.add(Recursos.stringRequest);
     }
     public void LLenarListView(){
         Adaptador=new AdaptadorLibro(VisualizarActivity.this,Recursos.ListaLibros);

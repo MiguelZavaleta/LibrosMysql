@@ -113,7 +113,7 @@
                 android:textStyle="bold"
                 android:textSize="30dp"
                 android:layout_margin="10dp"
-                android:inputType="number"
+                android:inputType="text"
                 android:padding="10dp"/>
 
 

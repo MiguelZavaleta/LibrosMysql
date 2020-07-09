@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,9 +66,7 @@ public class ModificarActivity extends AppCompatActivity {
         Recursos.InicializarRequets(this);
         BotonesEvento();
         ControlarComponentes(retornar());
-
     }
-
     public void ControlarComponentes(String llave) {
         switch (llave) {
             case "Agregar":
@@ -77,13 +76,13 @@ public class ModificarActivity extends AppCompatActivity {
                 btnEliminar.setVisibility(View.GONE);
                 break;
             case "Modificar":
-                Mensaje("Recibo Para Modificar Datos");
+               // Mensaje("Recibo Para Modificar Datos");
                 btnAgregar.setVisibility(View.GONE);
-
+                Txt[0].setEnabled(false);
                 break;
             case "Eliminar":
                 btnAgregar.setVisibility(View.GONE);
-                Mensaje("Recibo Para Eliminar");
+                btnActualizar.setVisibility(View.GONE);
                 break;
             default:
                 break;
@@ -107,12 +106,12 @@ public class ModificarActivity extends AppCompatActivity {
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mensaje("Agregar Buscamos");
+                Mensaje(txtBuscar.getText().toString());
                 if (txtBuscar.getText().toString().isEmpty()) {
                     Mensaje("Campo Vacios Verifica");
                     Limpiar();
                 } else {
-                    ConsultarDatos(txtBuscar.getText().toString());
+                  MostrarDatos();
                 }
             }
 
@@ -121,13 +120,12 @@ public class ModificarActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Mensaje(""+VerificarCamposVacios());
-                Mensaje("Actualizar");
                 if (VerificarCamposVacios()) {
                     Mensaje("Campso Vacios Verifica");
                 } else {
-                    InsertarDatosPost();
-                    Limpiar();
-                    txtBuscar.setText("");
+                    ModificarPost();
+                    //Limpiar();
+                    //txtBuscar.setText("");
 
                 }
             }
@@ -135,7 +133,6 @@ public class ModificarActivity extends AppCompatActivity {
         btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Mensaje("Eliminar Dato");
                 if (VerificarCamposVacios()) {
                     Mensaje("Campos Vacios Verifica");
                 } else {
@@ -163,13 +160,6 @@ public class ModificarActivity extends AppCompatActivity {
                     case "ErrorInsertar":
                         Mensaje("Los Datos no se Insertaron");
                         break;
-                    case "Actualizado":
-                        Mensaje("Los Datos Fueron Actualizados Correctamente");
-                        Limpiar();
-                        break;
-                    case "NoActualizado":
-                        Mensaje("Los Datos no se Actualizaron");
-                        break;
                     default:
                         //Mensaje("Los Datos no se Insertaron");
                         break;
@@ -196,13 +186,52 @@ public class ModificarActivity extends AppCompatActivity {
         Recursos.request.add(Recursos.stringRequest);
     }
 
+    public void ModificarPost() {
+        String url = Recursos.DireccionHtt + "Modificar.php";
+        Recursos.stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println(response);
+                switch (response) {
+                    case "Actualizado":
+                        Mensaje("Los Datos Fueron Actualizados Correctamente");
+                        //Limpiar();
+                        break;
+                    case "NoActualizado":
+                        Mensaje("Los Datos no se Actualizaron");
+                        break;
+                    default:
+                        //Mensaje("Los Datos no se Insertaron");
+                        break;
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Mensaje(error.getMessage());
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> Objeto = new HashMap<>();
+                Objeto.put("Cod_libro", Txt[0].getText().toString());
+                Objeto.put("Isbm", Txt[1].getText().toString());
+                Objeto.put("Titulo", Txt[2].getText().toString());
+                Objeto.put("Editorial", Txt[3].getText().toString());
+                Objeto.put("Edicion", Txt[4].getText().toString());
+                return Objeto;
+            }
+        };
+        System.out.println("Datos enviados:-> " + Recursos.stringRequest.toString());
+        Recursos.request.add(Recursos.stringRequest);
+    }
+
     public void Eliminar() {
         String url = Recursos.DireccionHtt + "Eliminar.php";
         Recursos.stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 System.out.println(response);
-                Mensaje(response);
                 if (response.trim().equalsIgnoreCase("Eliminado")) {
                     Mensaje("Dato Eliminado Exitosamente");
                     Limpiar();
@@ -227,29 +256,29 @@ public class ModificarActivity extends AppCompatActivity {
         Recursos.request.add(Recursos.stringRequest);
     }
 
-    public void ConsultarDatos(final String Ctrl) {
-
+    public void MostrarDatos() {
         String url = Recursos.DireccionHtt + "Consultar.php";
-        Recursos.jsonStringRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+        Recursos.stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
-                //System.out.println("Response: " + response.toString());
-                int i = 0;
+            public void onResponse(String response) {
+                Recursos.ListaLibros.clear();
+                System.out.println(response);
+
+                int i=0;
                 try {
-                    JSONArray jsonArray = response.getJSONArray("Libros");
-                    Recursos.ListaLibros.clear();
+                    JSONObject jsonObject=new JSONObject(response);
+                    JSONArray jsonArray=jsonObject.getJSONArray("Libros");
                     while (i < jsonArray.length()) {//LLenamos nuestros Objetos
-                        JSONObject jsonObject = null;
                         jsonObject = jsonArray.getJSONObject(i);
                         libro = new Libro();
                         libro.setCod_libro(jsonObject.optString("Cod_libro"));
-                        libro.setISBN(jsonObject.optString("ISBN"));
+                        libro.setISBN(jsonObject.optString("Isbm"));
                         libro.setTitulo(jsonObject.optString("Titulo"));
                         libro.setEditorial(jsonObject.optString("Editorial"));
                         libro.setEdicion(jsonObject.optString("Edicion"));
 
-                        System.out.println((i + 1) + "<< Imprimiendo Datos: " + Recursos.ListaLibros.get(i).getTitulo()
-                                + "\n>> ");
+
+
                         i++;
                     }
                     if (libro.getCod_libro().equals("NE")) {
@@ -258,29 +287,29 @@ public class ModificarActivity extends AppCompatActivity {
                         Txt[0].setText(libro.getCod_libro());
                         Txt[1].setText(libro.getISBN());
                         Txt[2].setText(libro.getTitulo());
-                        Txt[3].setText(libro.getEdicion());
-                        Txt[4].setText(libro.getEditorial());
+                        Txt[3].setText(libro.getEditorial());
+                        Txt[4].setText(libro.getEdicion());
                     }
-                } catch (JSONException e) {
-                    Recursos.ListaLibros.clear();
 
+                }catch (JSONException e){
+                    System.out.println("Error: "+ e.toString());
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Mensaje(error.getMessage());
+                System.out.println(error.getMessage());
             }
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> Objeto = new HashMap<>();
-                Objeto.put("Dato", Ctrl);
+                Objeto.put("clave", txtBuscar.getText().toString());
                 return Objeto;
             }
         };
-        System.out.println("URL enviada: " + Recursos.jsonStringRequest);
-        Recursos.request.add(Recursos.jsonStringRequest);
+        System.out.println("Datos enviados:-> " + Recursos.stringRequest.toString());
+        Recursos.request.add(Recursos.stringRequest);
     }
 
     public void Mensaje(String msj) {

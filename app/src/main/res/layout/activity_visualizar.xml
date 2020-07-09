@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".VisualizarActivity"
-    android:background="@color/md_teal_A700">
+    android:background="@color/md_pink_A700">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/md_white_1000"
             android:textSize="30dp"
-            android:text="Lista de Alumnos:"/>
+            android:text="Lista de Libros:"/>
         <Button
             android:id="@+id/idRegresar"
             android:layout_width="match_parent"
