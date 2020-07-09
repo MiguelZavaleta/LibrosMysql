@@ -3,6 +3,7 @@ package com.example.librosmysql.Recursos;
 public class Libro {
     String Cod_libro,ISBN,Titulo,Editorial,Edicion;
 
+
     public Libro(String cod_libro, String ISBN, String titulo, String editorial, String edicion) {
         Cod_libro = cod_libro;
         this.ISBN = ISBN;
